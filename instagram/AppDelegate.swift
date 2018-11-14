@@ -7,14 +7,18 @@
 //
 
 import UIKit
-
+import AVOSCloud
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    
 
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        AVOSCloud.setServiceRegion(.US)
+        AVOSCloud.setApplicationId("hz6lLVTTRVdWt2Wht9iJiGsO-MdYXbMMI", clientKey: "g0ddyatwACwVfd3DT0D9tQnf")
+        AVAnalytics.trackAppOpened(launchOptions: launchOptions)
+        login()
         // Override point for customization after application launch.
         return true
     }
@@ -39,6 +43,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func login() {
+        let username : String? = UserDefaults.standard.string(forKey: "username")
+        if  username != nil {
+            let storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            let myTabBar = storyboard.instantiateViewController(withIdentifier: "TabBar")
+            window?.rootViewController = myTabBar
+            
+//            AVUser.current()?.follow("5b9575c8c2ccb40038264a49", andCallback: { (success, error) in
+//                if success {
+//                    print("关注成功")
+//                } else {
+//                    print("关注失败")
+//                }
+//            })
+        }
     }
 
 
