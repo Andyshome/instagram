@@ -131,30 +131,31 @@ class SignUpVC: UIViewController, UIImagePickerControllerDelegate, UINavigationC
         imgTap.numberOfTapsRequired = 1
         avaImg.isUserInteractionEnabled = true
         avaImg.addGestureRecognizer(imgTap)
-        
+        let viewWidth = self.view.frame.width
+
         //改变avaImg的外观为圆形
         avaImg.layer.cornerRadius = avaImg.frame.width / 2
         avaImg.clipsToBounds = true
         
         //UI布局
-        avaImg.frame = CGRect(x: self.view.frame.width / 2 - 40, y: 40, width: 80, height: 80)
+        avaImg.frame = CGRect(x: self.view.frame.width / 2 , y: 40, width: 80, height: 80)
         
-        let viewWidth = self.view.frame.width
-        usernameTxt.frame = CGRect(x: 10, y: avaImg.frame.origin.y + 90, width: viewWidth - 20, height: 30)
-        passwordTxt.frame = CGRect(x: 10, y: usernameTxt.frame.origin.y + 40, width: viewWidth - 20, height: 30)
+        usernameTxt.frame = CGRect(x: 10, y: avaImg.frame.origin.y + 90, width: viewWidth - 10, height: 30)
+        passwordTxt.frame = CGRect(x: 10, y: usernameTxt.frame.origin.y + 40, width: viewWidth - 10, height: 30)
         repeatPasswordTxt.frame = CGRect(x: 10, y: passwordTxt.frame.origin.y + 40, width: viewWidth - 20, height: 30)
         
-        emailTxt.frame = CGRect(x: 10, y: repeatPasswordTxt.frame.origin.y + 60, width: viewWidth - 20, height: 30)
-        fullnameTxt.frame = CGRect(x: 10, y: emailTxt.frame.origin.y + 40, width: viewWidth - 20, height: 30)
-        bioTxt.frame = CGRect(x: 10, y: fullnameTxt.frame.origin.y + 40, width: viewWidth - 20, height: 30)
-        webTxt.frame = CGRect(x: 10, y: bioTxt.frame.origin.y + 40, width: viewWidth - 20, height: 30)
+        emailTxt.frame = CGRect(x: 10, y: repeatPasswordTxt.frame.origin.y + 60, width: viewWidth - 10, height: 30)
+        fullnameTxt.frame = CGRect(x: 10, y: emailTxt.frame.origin.y + 40, width: viewWidth - 10, height: 30)
+        bioTxt.frame = CGRect(x: 10, y: fullnameTxt.frame.origin.y + 40, width: viewWidth - 10, height: 30)
+        webTxt.frame = CGRect(x: 10, y: bioTxt.frame.origin.y + 40, width: viewWidth - 10, height: 30)
         
         signUpBtn.frame = CGRect(x: 20, y: webTxt.frame.origin.y + 50, width: viewWidth / 4, height: 30)
-        cancelBtn.frame = CGRect(x: viewWidth - signUpBtn.frame.width - 20, y: signUpBtn.frame.origin.y, width: signUpBtn.frame.width, height: signUpBtn.frame.height)
+        cancelBtn.frame = CGRect(x: viewWidth - signUpBtn.frame.width + 20, y: signUpBtn.frame.origin.y, width: signUpBtn.frame.width, height: signUpBtn.frame.height)
         //设置按钮圆角
         signUpBtn.layer.cornerRadius = signUpBtn.frame.width / 20
         cancelBtn.layer.cornerRadius = cancelBtn.frame.width / 20
-        
+        signUpBtn.clipsToBounds = true
+        cancelBtn.clipsToBounds = true
         //设置背景图
         let bg = UIImageView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
         bg.image = UIImage(named: "bg.jpg")
@@ -203,7 +204,7 @@ class SignUpVC: UIViewController, UIImagePickerControllerDelegate, UINavigationC
     func imagePickerController(_ picker: UIImagePickerController,
                                didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
-        guard let selectedImage = info[.originalImage] as? UIImage else {
+        guard let selectedImage = info[.editedImage] as? UIImage else {
             print("select picture error!")
             return
         }

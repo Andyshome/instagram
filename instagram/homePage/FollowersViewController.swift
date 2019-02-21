@@ -12,7 +12,7 @@ class FollowersViewController: UITableViewController {
 
     
     var show : String = String.init()
-    var user : String = String.init()
+    var user = AVUser.init()
     var followerArray = [AVUser]()
     
     
@@ -35,7 +35,7 @@ class FollowersViewController: UITableViewController {
     
     
     func loadFollowers() {
-        AVUser.current()?.getFollowers({ (followers, error) in
+        user.getFollowers({ (followers, error) in
             if error == nil && followers != nil {
                 self.followerArray = followers! as! [AVUser]
                 self.tableView.reloadData()
@@ -47,7 +47,7 @@ class FollowersViewController: UITableViewController {
     
     
     func loadFollowings() {
-        AVUser.current()?.getFollowees({ (followings, error) in
+        user.getFollowees({ (followings, error) in
             if error == nil && followings != nil {
                 self.followerArray = followings! as! [AVUser]
                 self.tableView.reloadData()
@@ -65,7 +65,6 @@ class FollowersViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! FollowersCell
-        print("\(followerArray.count) I know something happens!!!!!!!!!!")
         cell.usernameLable.text = followerArray[indexPath.row].username
         let ava = followerArray[indexPath.row].object(forKey: "ava") as! AVFile
         ava.getDataInBackground { (data, error) in
@@ -76,7 +75,7 @@ class FollowersViewController: UITableViewController {
             }
         }
         let query = followerArray[indexPath.row].followeeQuery()
-        query.whereKey("user", equalTo: AVUser.current())
+        query.whereKey("user", equalTo: user)
         query.whereKey("followee", equalTo: followerArray[indexPath.row])
         query.countObjectsInBackground { (count, error) in
             if error == nil {
@@ -89,13 +88,23 @@ class FollowersViewController: UITableViewController {
                 }
             }
         }
-        if cell.usernameLable.text == AVUser.current()?.username {
+        if cell.usernameLable.text == user.username {
             cell.followBtn.isHidden = true
         }
         cell.user = followerArray[indexPath.row]
         return cell
     }
     
-    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath) as! FollowersCell
+        if cell.usernameLable.text == AVUser.current()?.username {
+            let home = storyboard?.instantiateViewController(withIdentifier: "HomeVC") as! HomeVC
+            self.navigationController?.pushViewController(home, animated: true)
+        } else {
+            guestArray.append(followerArray[indexPath.row])
+            let guest = storyboard?.instantiateViewController(withIdentifier: "GuestViewController") as! GuestViewController
+            self.navigationController?.pushViewController(guest, animated: true)
+        }
+    }
    
 }

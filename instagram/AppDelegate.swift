@@ -15,6 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        window?.backgroundColor = UIColor.white
         AVOSCloud.setServiceRegion(.US)
         AVOSCloud.setApplicationId("hz6lLVTTRVdWt2Wht9iJiGsO-MdYXbMMI", clientKey: "g0ddyatwACwVfd3DT0D9tQnf")
         AVAnalytics.trackAppOpened(launchOptions: launchOptions)

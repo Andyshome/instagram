@@ -17,6 +17,9 @@ class FollowersCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        avaImg.layer.borderWidth = 1
+        avaImg.layer.masksToBounds = false
+        avaImg.layer.borderColor = UIColor.white.cgColor
         avaImg.layer.cornerRadius = avaImg.frame.width / 2
         avaImg.clipsToBounds = true
     }

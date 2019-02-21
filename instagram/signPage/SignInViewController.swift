@@ -22,7 +22,7 @@ class SignInVC: UIViewController {
         bg.image = UIImage(named: "bg.jpg")
         bg.layer.zPosition = -1
         self.view.addSubview(bg)
-        label.font = UIFont(name: "Pacifico", size: 25   )
+        label.font = UIFont(name: "Pacifico", size: 25)
         label.frame = CGRect(x: 10, y: 130, width: self.view.frame.width - 20, height: 50)
         usernameTxt.frame = CGRect(x: 10, y: label.frame.origin.y + 140, width: self.view.frame.width - 20, height: 30)
         passwordTxt.frame = CGRect(x: 10, y: usernameTxt.frame.origin.y + 80, width: self.view.frame.width - 20, height: 30)
@@ -38,8 +38,6 @@ class SignInVC: UIViewController {
     @objc func hideKeyboard() {
         self.view.endEditing(true)
     }
-    
-    
     
     
     

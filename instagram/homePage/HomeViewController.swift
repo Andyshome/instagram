@@ -20,11 +20,17 @@ class HomeVC: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = AVUser.current()?.username?.uppercased()
+        
+        
         refresher = UIRefreshControl()
         refresher.addTarget(self, action: #selector(refresh), for: .valueChanged)
         loadPosts()
+        addNotificationObserve()
+        
+        
         collectionView.addSubview(refresher)
         self.collectionView.alwaysBounceVertical = true
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -32,11 +38,47 @@ class HomeVC: UICollectionViewController {
         // Do any additional setup after loading the view.
     }
 
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y >= scrollView.contentSize.height - self.view.frame.height {
+            self.loadMore()
+        }
+    }
+    
+    func loadMore() {
+        if page <= picArray.count {
+            page = page + 12
+            
+            let query = AVQuery.init(className: "Posts")
+            query.whereKey("username", equalTo: AVUser.current()?.username)
+            query.limit = page
+            query.findObjectsInBackground { (objects, error) in
+                if error == nil{
+                    self.puuidArray.removeAll(keepingCapacity: false)
+                    self.picArray.removeAll(keepingCapacity: false)
+                    
+                    for object in objects! {
+                        self.puuidArray.append((object as AnyObject).value(forKey: "puuid") as! String)
+                        self.picArray.append((object as AnyObject).value(forKey: "pic") as! AVFile)
+                    }
+                    
+                    self.collectionView.reloadData()
+                } else {
+                    print(error?.localizedDescription)
+                }
+            }
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    func addNotificationObserve() {
+         NotificationCenter.default.addObserver(self, selector: #selector(reload(notification:)), name: NSNotification.Name.init("reload"), object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(uploaded(notification:)), name: NSNotification.Name.init("uploaded"), object: nil)
+    }
 
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -138,10 +180,19 @@ class HomeVC: UICollectionViewController {
     
     
     @objc func refresh() {
-        collectionView?.reloadData()
+        collectionView.reloadData()
         refresher.endRefreshing()
     }
     
+    @objc func reload(notification:Notification) {
+        collectionView.reloadData()
+    }
+    
+    @objc func uploaded(notification:Notification) {
+        collectionView.reloadData()
+        loadPosts()
+        
+    }
     
     @objc func postsTap(_ recognizer:UITapGestureRecognizer) {
         if !picArray.isEmpty {
@@ -153,7 +204,7 @@ class HomeVC: UICollectionViewController {
     
     @objc func FollowersTap(_ recognizer:UITapGestureRecognizer) {
         let followers = self.storyboard?.instantiateViewController(withIdentifier: "FollowersViewController") as! FollowersViewController
-        followers.user = (AVUser.current()?.username)!
+        followers.user = AVUser.current()!
         followers.show = "关 注 者"
         self.navigationController?.pushViewController(followers, animated: true)
     }
@@ -162,16 +213,26 @@ class HomeVC: UICollectionViewController {
     
     @objc func FolloweeTap(_ recognizer:UITapGestureRecognizer) {
         let followings = self.storyboard?.instantiateViewController(withIdentifier: "FollowersViewController") as! FollowersViewController
-        followings.user = (AVUser.current()?.username)!
+        followings.user = AVUser.current()!
         followings.show = "关 注"
         self.navigationController?.pushViewController(followings, animated: true)
     }
     
     
     
-    
-    
-    
+    @IBAction func logout(_ sender: AnyObject) {
+        // 退出用户登录
+        AVUser.logOut()
+        
+        // 从UserDefaults中移除用户登录记录
+        UserDefaults.standard.removeObject(forKey: "username")
+        UserDefaults.standard.synchronize()
+        
+        // 设置应用程序的rootViewController为登录控制器
+        let signIn = self.storyboard?.instantiateViewController(withIdentifier: "SignInVC")
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.window?.rootViewController = signIn
+    }
     
     
     
@@ -217,7 +278,12 @@ class HomeVC: UICollectionViewController {
         return cell
     }
     
-    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        postuid.append(puuidArray[indexPath.row])
+        print(postuid)
+        let postViewController = self.storyboard?.instantiateViewController(withIdentifier: "PostVC") as! PostViewController
+        self.navigationController?.pushViewController(postViewController, animated: true)
+    }
     
   
 
